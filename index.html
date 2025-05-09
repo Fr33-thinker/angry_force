@@ -6,66 +6,100 @@
     <title>NCEA L2 Physics - Projectile Challenge</title>
     <style>
         body { font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; background-color: #f0f8ff; }
-        #gameContainer { display: flex; align-items: flex-start; margin-top: 20px; }
-        canvas { border: 2px solid #000; background-color: #87CEEB; /* Sky Blue */ }
-        #controlsAndInfo { margin-left: 20px; padding: 15px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); width: 250px; }
-        .control-group { margin-bottom: 15px; }
-        .control-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; }
+        #gameContainer { display: flex; flex-direction: column; align-items: center; margin-top: 10px; }
+        #mainGameArea { display: flex; align-items: flex-start; }
+        canvas { border: 2px solid #000; background-color: #87CEEB; /* Sky Blue */ cursor: crosshair;}
+        #controlsAndInfo { margin-left: 20px; padding: 15px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); width: 280px; }
+        .control-group { margin-bottom: 12px; }
+        .control-group label { display: block; margin-bottom: 4px; font-weight: bold; color: #333; }
         .control-group input[type="range"], .control-group input[type="number"] { width: 100%; box-sizing: border-box; }
         .control-group span { margin-left: 5px; color: #555; }
-        button { display: block; width: 100%; padding: 12px 15px; background-color: #5cb85c; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        button { display: block; width: 100%; padding: 10px 15px; background-color: #5cb85c; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 15px; margin-top: 8px; }
         button:hover { background-color: #4cae4c; }
-        #infoPanel h3, #educationalPanel h3 { margin-top: 0; color: #0056b3; }
-        #infoPanel p, #educationalPanel p, #educationalPanel li { font-size: 0.9em; line-height: 1.4; }
-        #educationalPanel { margin-top: 20px; padding: 15px; background-color: #e9ecef; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); max-width: 800px; text-align: left;}
-        #levelMessage { font-weight: bold; color: #d9534f; margin-bottom: 10px; text-align: center; }
+        button.secondary { background-color: #f0ad4e; }
+        button.secondary:hover { background-color: #ec971f; }
+        button:disabled { background-color: #cccccc; cursor: not-allowed;}
+        #infoPanel h3, #educationalPanel h3, #challengePanel h3 { margin-top: 0; color: #0056b3; }
+        #infoPanel p, #educationalPanel p, #educationalPanel li, #challengePanel p { font-size: 0.9em; line-height: 1.3; }
+        #educationalPanel { margin-top: 15px; padding: 15px; background-color: #e9ecef; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); max-width: 800px; width:90%; text-align: left;}
+        #levelMessage { font-weight: bold; color: #0056b3; margin-bottom: 10px; text-align: center; font-size: 1.1em; }
+        #challengePanel { margin-top:15px; padding:10px; background-color: #fffacd; border: 1px solid #f0e68c; border-radius: 5px;}
+        .challenge-question input[type="text"] { width: 60px; margin: 0 5px; padding: 5px; border: 1px solid #ccc; border-radius: 3px; }
+        #vectorInfo { position: absolute; background-color: rgba(255,255,255,0.85); border: 1px solid #ccc; padding: 8px; border-radius: 5px; font-size: 0.8em; display: none; pointer-events: none; }
     </style>
 </head>
 <body>
     <h1>Projectile Motion & Forces Challenge</h1>
-    <p>NCEA Level 2 Physics Learning Game</p>
+    <p>NCEA Level 2 Physics Learning Game (Focus: Kinematics & Projectiles)</p>
 
     <div id="gameContainer">
-        <canvas id="gameCanvas" width="800" height="500"></canvas>
-        <div id="controlsAndInfo">
-            <h3>Controls & Launch Data</h3>
-            <div class="control-group">
-                <label for="angle">Launch Angle:</label>
-                <input type="range" id="angle" name="angle" min="10" max="80" value="45">
-                <span id="angleValue">45°</span>
-            </div>
-            <div class="control-group">
-                <label for="power">Launch Power (Initial Speed):</label>
-                <input type="range" id="power" name="power" min="20" max="100" value="60">
-                <span id="powerValue">60 m/s</span>
-            </div>
-            <button id="launchButton">Launch!</button>
-            <button id="resetButton" style="background-color: #f0ad4e;">Reset Level</button>
+        <div id="levelMessage">Level 1: Hit the target!</div>
+        <div id="mainGameArea">
+            <canvas id="gameCanvas" width="800" height="500"></canvas>
+            <div id="controlsAndInfo">
+                <h3>Controls & Launch Data</h3>
+                <div class="control-group">
+                    <label>Current Gravity (g): <span id="gravityDisplay">9.81</span> m/s²</label>
+                </div>
+                <div class="control-group">
+                    <label for="angle">Launch Angle:</label>
+                    <input type="range" id="angle" name="angle" min="1" max="89" value="45">
+                    <span id="angleValue">45°</span>
+                </div>
+                <div class="control-group">
+                    <label for="power">Launch Speed (v<sub>initial</sub>):</label>
+                    <input type="range" id="power" name="power" min="10" max="100" value="50">
+                    <span id="powerValue">50 m/s</span>
+                </div>
+                <button id="launchButton">Launch!</button>
+                <button id="resetButton" class="secondary">Reset Level</button>
+                <button id="analysisModeButton" class="secondary" disabled>Toggle Analysis Mode</button>
 
-            <div id="infoPanel" style="margin-top: 20px; border-top: 1px solid #ccc; padding-top:15px;">
-                <h3>Flight Predictions/Results:</h3>
-                <p>Max Height: <span id="maxHeightDisplay">0</span> m</p>
-                <p>Range: <span id="rangeDisplay">0</span> m</p>
-                <p>Time of Flight: <span id="timeOfFlightDisplay">0</span> s</p>
+                <div id="infoPanel" style="margin-top: 15px; border-top: 1px solid #ccc; padding-top:10px;">
+                    <h4>Pre-Launch Calculations:</h4>
+                    <p>Initial v<sub>x</sub>: <span id="initialVxDisplay">0</span> m/s</p>
+                    <p>Initial v<sub>y</sub>: <span id="initialVyDisplay">0</span> m/s</p>
+                    <h4>Predictions (to launch height):</h4>
+                    <p>Predicted Max Height: <span id="maxHeightDisplay">0</span> m</p>
+                    <p>Predicted Range: <span id="rangeDisplay">0</span> m</p>
+                    <p>Predicted Time of Flight: <span id="timeOfFlightDisplay">0</span> s</p>
+                    <h4 style="margin-top:10px;">Actual Flight Results:</h4>
+                     <p>Actual Max Height: <span id="actualMaxHeightDisplay">-</span> m</p>
+                    <p>Actual Range: <span id="actualRangeDisplay">-</span> m</p>
+                    <p>Actual Time of Flight: <span id="actualTimeOfFlightDisplay">-</span> s</p>
+                </div>
             </div>
         </div>
-    </div>
+        <div id="vectorInfo"></div> <!-- For displaying vector data on hover in analysis mode -->
 
-    <div id="educationalPanel">
-        <h3 id="levelMessage">Level 1: Hit the target!</h3>
-        <p><strong>How to Play:</strong> Adjust the launch angle and power using the sliders. Click "Launch!" to fire the projectile. Try to hit all the green targets.</p>
-        <p><strong>Physics Focus:</strong></p>
-        <ul>
-            <li><strong>Trajectory:</strong> The curved path of the projectile is determined by its initial velocity (speed and angle) and the constant downward acceleration due to gravity (g = 9.8 m/s²). We are ignoring air resistance for simplicity.</li>
-            <li><strong>Velocity Components:</strong> The initial velocity (v) can be broken into:
-                <ul>
-                    <li>Horizontal component (v<sub>x</sub>) = v * cos(angle). This component remains constant (ignoring air resistance).</li>
-                    <li>Vertical component (v<sub>y</sub>) = v * sin(angle). This component is affected by gravity.</li>
-                </ul>
-            </li>
-            <li><strong>Impact:</strong> When the projectile hits a target, it exerts a force. The magnitude of this force is related to the projectile's mass and its change in velocity (momentum). A faster impact generally means a greater force.</li>
-            <li><strong>Tip:</strong> An angle of 45° generally gives the maximum range on flat ground. How does this change if the target is higher or lower?</li>
-        </ul>
+        <div id="challengePanel">
+            <h3>Level Challenge</h3>
+            <div id="challengeQuestionArea">
+                <p>Complete the current flight objective first.</p>
+            </div>
+            <input type="text" id="challengeAnswerInput1" placeholder="Answer 1" style="display:none; margin-right: 5px;">
+            <input type="text" id="challengeAnswerInput2" placeholder="Answer 2" style="display:none;">
+            <button id="submitChallengeButton" style="display:none; margin-top:5px; background-color: #337ab7;">Submit Answer</button>
+            <p id="challengeFeedback" style="font-weight:bold; margin-top:5px;"></p>
+        </div>
+
+        <div id="educationalPanel">
+            <h3>Physics Focus & Instructions</h3>
+            <p id="levelInstructions">Adjust angle and power, then launch. Try to hit all targets.</p>
+            <p><strong>Key Concepts:</strong></p>
+            <ul>
+                <li><strong>Projectile Motion:</strong> Path (trajectory) is a parabola (negligible air resistance).</li>
+                <li><strong>Velocity Components:</strong>
+                    <ul>
+                        <li>v<sub>x</sub> = v * cos(θ) (horizontal, constant)</li>
+                        <li>v<sub>y</sub> = v * sin(θ) (vertical, changes due to gravity)</li>
+                    </ul>
+                </li>
+                <li><strong>Force:</strong> The main force acting is gravity (F<sub>g</sub> = mg), causing constant downward acceleration (g).</li>
+                <li><strong>At Max Height:</strong> v<sub>y</sub> = 0 m/s. Acceleration is still g downwards.</li>
+                <li><strong>Analysis Mode:</strong> After a launch, toggle this to see force/velocity vectors along the path.</li>
+            </ul>
+        </div>
     </div>
 
     <script src="game.js"></script>
